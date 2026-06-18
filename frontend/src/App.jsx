@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [health, setHealth] = useState({ api: 'checking', db: 'checking' });
+  const [health, setHealth] = useState({ api: "checking", db: "checking" });
 
   // Fetch API Health & Tasks on mount
   useEffect(() => {
@@ -15,15 +15,15 @@ function App() {
 
   const checkHealth = async () => {
     try {
-      const response = await fetch('/api/health');
+      const response = await fetch("/api/health");
       const data = await response.json();
-      if (response.ok && data.status === 'healthy') {
-        setHealth({ api: 'online', db: 'online' });
+      if (response.ok && data.status === "healthy") {
+        setHealth({ api: "online", db: "online" });
       } else {
-        setHealth({ api: 'online', db: 'offline' });
+        setHealth({ api: "online", db: "offline" });
       }
-    } catch (err) {
-      setHealth({ api: 'offline', db: 'offline' });
+    } catch (_err) {
+      setHealth({ api: "offline", db: "offline" });
     }
   };
 
@@ -31,9 +31,9 @@ function App() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/tasks');
+      const response = await fetch("/api/tasks");
       if (!response.ok) {
-        throw new Error('Impossible de charger les tâches.');
+        throw new Error("Impossible de charger les tâches.");
       }
       const data = await response.json();
       setTasks(data);
@@ -50,20 +50,20 @@ function App() {
 
     try {
       setError(null);
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newTaskTitle }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la création de la tâche.');
+        throw new Error(errorData.error || "Erreur lors de la création de la tâche.");
       }
 
       const newTask = await response.json();
       setTasks((prev) => [...prev, newTask]);
-      setNewTaskTitle('');
+      setNewTaskTitle("");
       checkHealth(); // Proactively refresh health
     } catch (err) {
       setError(err.message);
@@ -74,17 +74,15 @@ function App() {
     try {
       setError(null);
       const response = await fetch(`/api/tasks/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
       });
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la mise à jour de la tâche.');
+        throw new Error("Erreur lors de la mise à jour de la tâche.");
       }
 
       const updatedTask = await response.json();
-      setTasks((prev) =>
-        prev.map((task) => (task.id === id ? updatedTask : task))
-      );
+      setTasks((prev) => prev.map((task) => (task.id === id ? updatedTask : task)));
     } catch (err) {
       setError(err.message);
     }
@@ -94,11 +92,11 @@ function App() {
     try {
       setError(null);
       const response = await fetch(`/api/tasks/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la suppression de la tâche.');
+        throw new Error("Erreur lors de la suppression de la tâche.");
       }
 
       setTasks((prev) => prev.filter((task) => task.id !== id));
@@ -113,7 +111,11 @@ function App() {
         <div className="header-brand">
           <div className="logo-icon">
             <svg viewBox="0 0 24 24" width="28" height="28">
-              <path fill="currentColor" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+              <title>TaskCompose Logo</title>
+              <path
+                fill="currentColor"
+                d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+              />
             </svg>
           </div>
           <div>
@@ -124,12 +126,22 @@ function App() {
 
         <div className="status-container">
           <div className={`status-badge ${health.api}`}>
-            <span className="indicator"></span>
-            API: {health.api === 'online' ? 'En ligne' : health.api === 'offline' ? 'Hors ligne' : 'Vérification...'}
+            <span className="indicator" />
+            API:{" "}
+            {health.api === "online"
+              ? "En ligne"
+              : health.api === "offline"
+                ? "Hors ligne"
+                : "Vérification..."}
           </div>
           <div className={`status-badge ${health.db}`}>
-            <span className="indicator"></span>
-            Base de données: {health.db === 'online' ? 'Connectée' : health.db === 'offline' ? 'Erreur' : 'Vérification...'}
+            <span className="indicator" />
+            Base de données:{" "}
+            {health.db === "online"
+              ? "Connectée"
+              : health.db === "offline"
+                ? "Erreur"
+                : "Vérification..."}
           </div>
         </div>
       </header>
@@ -143,9 +155,9 @@ function App() {
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               maxLength={100}
-              disabled={health.api === 'offline'}
+              disabled={health.api === "offline"}
             />
-            <button type="submit" disabled={!newTaskTitle.trim() || health.api === 'offline'}>
+            <button type="submit" disabled={!newTaskTitle.trim() || health.api === "offline"}>
               Ajouter
             </button>
           </form>
@@ -154,7 +166,11 @@ function App() {
         {error && (
           <div className="error-banner">
             <svg viewBox="0 0 24 24" width="20" height="20">
-              <path fill="currentColor" d="M12,2L1,21H23M12,6L19.53,19H4.47M11,10V14H13V10M11,16V18H13V16" />
+              <title>Attention</title>
+              <path
+                fill="currentColor"
+                d="M12,2L1,21H23M12,6L19.53,19H4.47M11,10V14H13V10M11,16V18H13V16"
+              />
             </svg>
             <span>{error}</span>
           </div>
@@ -163,13 +179,17 @@ function App() {
         <section className="tasks-list-section">
           {loading ? (
             <div className="loading-spinner-container">
-              <div className="spinner"></div>
+              <div className="spinner" />
               <p>Chargement des tâches depuis PostgreSQL...</p>
             </div>
           ) : tasks.length === 0 ? (
             <div className="empty-state">
               <svg viewBox="0 0 24 24" width="64" height="64">
-                <path fill="currentColor" d="M22 2v20H2V2h20m-2 2H4v14h16V4m-6 6v2H8v-2h6m0 4v2H8v-2h6z" />
+                <title>Aucune tâche</title>
+                <path
+                  fill="currentColor"
+                  d="M22 2v20H2V2h20m-2 2H4v14h16V4m-6 6v2H8v-2h6m0 4v2H8v-2h6z"
+                />
               </svg>
               <h3>Aucune tâche trouvée</h3>
               <p>Ajoutez une tâche ci-dessus pour tester la persistance.</p>
@@ -177,24 +197,44 @@ function App() {
           ) : (
             <div className="tasks-grid">
               {tasks.map((task) => (
-                <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''}`}>
-                  <div className="task-card-content" onClick={() => toggleTask(task.id)}>
+                <div key={task.id} className={`task-card ${task.completed ? "completed" : ""}`}>
+                  <div
+                    className="task-card-content"
+                    onClick={() => toggleTask(task.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleTask(task.id);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <div className="checkbox">
                       {task.completed && (
                         <svg viewBox="0 0 24 24" width="16" height="16">
-                          <path fill="currentColor" d="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41-1.41z" />
+                          <title>Terminée</title>
+                          <path
+                            fill="currentColor"
+                            d="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41-1.41z"
+                          />
                         </svg>
                       )}
                     </div>
                     <span className="task-title">{task.title}</span>
                   </div>
-                  <button 
-                    className="delete-btn" 
+                  <button
+                    type="button"
+                    className="delete-btn"
                     onClick={() => deleteTask(task.id)}
                     title="Supprimer la tâche"
                   >
                     <svg viewBox="0 0 24 24" width="18" height="18">
-                      <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                      <title>Supprimer</title>
+                      <path
+                        fill="currentColor"
+                        d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
+                      />
                     </svg>
                   </button>
                 </div>
